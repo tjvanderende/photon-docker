@@ -19,6 +19,7 @@ SKIP_SPACE_CHECK = os.getenv("SKIP_SPACE_CHECK", "False").lower() in ("true", "1
 APPRISE_URLS = os.getenv("APPRISE_URLS")
 BUILD_PHOTON_PARAMS = os.getenv("BUILD_PHOTON_PARAMS", "-languages en,de,fr,es,it")
 MIN_INDEX_DATE = os.getenv("MIN_INDEX_DATE", "10.02.26")
+EXIT_AFTER_IMPORT = os.getenv("EXIT_AFTER_IMPORT", "False").lower() in ("true", "1", "t")
 
 # APP CONFIG
 INDEX_DB_VERSION = "1.0"

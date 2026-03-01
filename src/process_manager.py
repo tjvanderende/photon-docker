@@ -292,10 +292,16 @@ class PhotonManager:
     def run(self):
         logger.info("Photon Manager starting...")
 
-        if not config.FORCE_UPDATE and os.path.isdir(config.OS_NODE_DIR):
+        if config.EXIT_AFTER_IMPORT:
+            self.run_initial_setup()
+        elif not config.FORCE_UPDATE and os.path.isdir(config.OS_NODE_DIR):
             logger.info("Existing index found, skipping initial setup")
         else:
             self.run_initial_setup()
+
+        if config.EXIT_AFTER_IMPORT:
+            logger.info("EXIT_AFTER_IMPORT is set, exiting after import step")
+            sys.exit(0)
 
         if not self.start_photon():
             logger.error("Failed to start Photon during initial startup")

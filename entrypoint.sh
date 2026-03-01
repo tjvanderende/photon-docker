@@ -34,4 +34,7 @@ elif [ -d "/photon/data/node_1" ]; then
 fi
 
 chown -R photon:photon /photon
+
+# Remove stale node lock (NFS/EFS doesn't clean up locks on process death)
+rm -f /photon/data/photon_data/node_1/data/node.lock
 exec gosu photon "$@"
