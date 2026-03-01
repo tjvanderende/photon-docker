@@ -1,5 +1,5 @@
 services:
-    photon:
+    photon-importer:
         build:
             context: .
             dockerfile: Dockerfile
@@ -10,6 +10,24 @@ services:
             - BUILD_PHOTON_PARAMS=-languages nl,en,de,fr,it,es
             - LOG_LEVEL=DEBUG
             - SKIP_SPACE_CHECK=true
+            - EXIT_AFTER_IMPORT=true
+        volumes:
+            - photon_data_test:/photon/data
+    photon-serve:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                - PHOTON_VERSION=1.0.0
+        depends_on:
+            photon-importer:
+                condition: service_completed_successfully
+        environment:
+            - LOG_LEVEL=DEBUG
+            - SKIP_SPACE_CHECK=true
+            - UPDATE_INTERVAL=24h
+            - UPDATE_STRATEGY=PARALLEL
+            - INITIAL_DOWNLOAD=FALSE # Data is pre-loaded by the worker task
         volumes:
             - photon_data_test:/photon/data
         ports:
