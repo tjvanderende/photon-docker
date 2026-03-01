@@ -297,6 +297,10 @@ class PhotonManager:
         else:
             self.run_initial_setup()
 
+        if config.EXIT_AFTER_IMPORT:
+            logger.info("EXIT_AFTER_IMPORT is set, exiting after import step")
+            sys.exit(0)
+
         if not self.start_photon():
             logger.error("Failed to start Photon during initial startup")
             sys.exit(1)
