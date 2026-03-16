@@ -32,6 +32,7 @@ def main():
     logger.info(f"SKIP_MD5_CHECK: {config.SKIP_MD5_CHECK}")
     logger.info(f"INITIAL_DOWNLOAD: {config.INITIAL_DOWNLOAD}")
     logger.info(f"SKIP_SPACE_CHECK: {config.SKIP_SPACE_CHECK}")
+    logger.info(f"EXIT_AFTER_IMPORT: {config.EXIT_AFTER_IMPORT}")
     if config.APPRISE_URLS:
         logger.info("APPRISE_URLS: REDACTED")
     else:
