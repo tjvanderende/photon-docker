@@ -13,6 +13,7 @@ from src.filesystem import clear_temp_dir, extract_index, move_index, verify_che
 from src.utils import config
 from src.utils.logger import get_logger
 from src.utils.regions import get_index_url_path
+from src.utils.s3 import download_s3_file, get_s3_file_size, is_s3_url
 from src.utils.sanitize import sanitize_url
 
 
@@ -162,6 +163,12 @@ def get_download_url() -> str:
     return download_url
 
 
+def _get_file_size(url: str) -> int:
+    if is_s3_url(url):
+        return get_s3_file_size(url)
+    return get_remote_file_size(url)
+
+
 def parallel_update():
     logging.info("Starting parallel update process...")
 
@@ -181,7 +188,7 @@ def parallel_update():
         download_url = get_download_url()
 
         try:
-            file_size = get_remote_file_size(download_url)
+            file_size = _get_file_size(download_url)
             if not check_disk_space_requirements(file_size, is_parallel=True):
                 logging.error("Insufficient disk space for parallel update")
                 raise InsufficientSpaceError("Insufficient disk space for parallel update")
@@ -242,7 +249,7 @@ def sequential_update():
         download_url = get_download_url()
 
         try:
-            file_size = get_remote_file_size(download_url)
+            file_size = _get_file_size(download_url)
             if not check_disk_space_requirements(file_size, is_parallel=False):
                 logging.error("Insufficient disk space for sequential update")
                 raise InsufficientSpaceError("Insufficient disk space for sequential update")
@@ -498,6 +505,9 @@ def _perform_download(url, destination, resume_byte_pos, mode, start_time):
 
 
 def download_file(url, destination):
+    if is_s3_url(url):
+        return download_s3_file(url, destination)
+
     start_time = time.time()
     max_retries = int(config.DOWNLOAD_MAX_RETRIES)
 
