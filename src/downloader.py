@@ -294,6 +294,8 @@ def download_index() -> str:
     download_url = get_download_url()
     if download_url.endswith(".jsonl.zst"):
         output_file = "photon-data-dump.jsonl.zst"
+    elif download_url.endswith(".tar.gz"):
+        output_file = "photon-db-latest.tar.gz"
     else:
         output_file = f"photon-db-latest.{config.INDEX_FILE_EXTENSION}"
 
@@ -321,6 +323,8 @@ def download_md5():
     index_url = get_download_url()
     if index_url.endswith(".jsonl.zst"):
         output_file = "photon-data-dump.jsonl.zst.md5"
+    elif index_url.endswith(".tar.gz"):
+        output_file = "photon-db-latest.tar.gz.md5"
     else:
         output_file = f"photon-db-latest.{config.INDEX_FILE_EXTENSION}.md5"
     output = os.path.join(config.TEMP_DIR, output_file)
