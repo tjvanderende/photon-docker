@@ -79,7 +79,7 @@ class PhotonManager:
 
     def run_initial_setup(self):
         logger.info("Running initial setup...")
-        result = subprocess.run(["uv", "run", "-m", "src.entrypoint", "setup"], check=False, cwd="/photon")  # noqa S603
+        result = subprocess.run(["uv", "run", "--no-sync", "-m", "src.entrypoint", "setup"], check=False, cwd="/photon")  # noqa S603
 
         if result.returncode != 0:
             logger.error("Setup failed!")
@@ -107,7 +107,17 @@ class PhotonManager:
             if java_params:
                 cmd.extend(shlex.split(java_params))
 
-            cmd.extend(["-jar", "/photon/photon.jar", "serve", "-listen-ip", "0.0.0.0", "-data-dir", config.DATA_DIR]) #noqa S104
+            cmd.extend(
+                [
+                    "-jar",
+                    "/photon/photon.jar",
+                    "serve",
+                    "-listen-ip",
+                    config.PHOTON_LISTEN_IP,
+                    "-data-dir",
+                    config.DATA_DIR,
+                ]
+            )
 
             if enable_metrics:
                 cmd.extend(["-metrics-enable", "prometheus"])
@@ -208,7 +218,7 @@ class PhotonManager:
         if config.UPDATE_STRATEGY == "SEQUENTIAL":
             self.stop_photon()
 
-        result = subprocess.run(["uv", "run", "-m", "src.updater"], check=False, cwd="/photon")  # noqa S603
+        result = subprocess.run(["uv", "run", "--no-sync", "-m", "src.updater"], check=False, cwd="/photon")  # noqa S603
 
         if result.returncode == 0:
             logger.info("Update process completed, verifying Photon health...")
@@ -218,7 +228,7 @@ class PhotonManager:
                 if self.start_photon():
                     update_duration = time.time() - update_start
                     logger.info(f"Update completed successfully - Photon healthy ({update_duration:.1f}s)")
-                    target_node_dir = os.path.join(config.PHOTON_DATA_DIR, "node_1")
+                    target_node_dir = os.path.join(config.PHOTON_DATA_DIR)
                     cleanup_backup_after_verification(target_node_dir)
                 else:
                     update_duration = time.time() - update_start
@@ -227,7 +237,7 @@ class PhotonManager:
                 if self.start_photon():
                     update_duration = time.time() - update_start
                     logger.info(f"Update completed successfully - Photon healthy ({update_duration:.1f}s)")
-                    target_node_dir = os.path.join(config.PHOTON_DATA_DIR, "node_1")
+                    target_node_dir = os.path.join(config.PHOTON_DATA_DIR)
                     cleanup_backup_after_verification(target_node_dir)
                 else:
                     update_duration = time.time() - update_start
